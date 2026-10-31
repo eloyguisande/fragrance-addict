@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /buscador/_capturas/
 
-Sitemap: https://eloyguisande.github.io/perfume-dupes-ranking/sitemap.xml
+Sitemap: https://eloyguisande.github.io/fragrance-addict/sitemap.xml
