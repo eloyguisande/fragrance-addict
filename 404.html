@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>Fragrance Addict has moved</title>
+<link rel="canonical" href="https://eloyguisande.github.io/fragrance-addict/">
+<script>
+// Direcciones viejas (/perfume-dupes-ranking/…, /fragrance-addict/dupes/…) → web nueva, conservando ?ref= y #.
+(function(){
+  var p = location.pathname.replace(/^\/(perfume-dupes-ranking|fragrance-addict)(?=\/|$)/, "");
+  var n = p.replace(/^(\/es)?\/dupes(?=\/|$)/, "$1/inspired-by").replace(/^(\/es)?\/cheap-dupes(?=\/|$)/, "$1/best-value");
+  var nuevo = /^\/fragrance-addict(\/|$)/.test(location.pathname) && n === p ? "/" : (n || "/");
+  location.replace("/fragrance-addict" + nuevo + location.search + location.hash);
+})();
+</script>
+<style>body{background:#111;color:#ddd;font:16px system-ui;padding:3em}a{color:#e8b86d}</style>
+</head><body><p>Moved to <a href="https://eloyguisande.github.io/fragrance-addict/">eloyguisande.github.io/fragrance-addict</a>.</p></body></html>
