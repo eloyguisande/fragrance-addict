@@ -91,7 +91,18 @@ td.am{white-space:nowrap}th{padding:10px 6px}td{padding:8px 6px}
 .cm.op .cmp{display:block}.cmp label{display:block;white-space:nowrap;padding:3px 0;cursor:pointer;color:var(--tx)}
 #po{margin:0 32px;display:none}.og{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--ln)}
 .og>img{width:64px;height:86px;object-fit:contain;background:#fff;border-radius:6px;flex:none}.og h3{margin:0 0 2px;font-size:15px}
-.og ol{margin:6px 0 0;padding:0;list-style:none}.og li{display:flex;gap:10px;align-items:center;padding:3px 0;flex-wrap:wrap}.og li .rkp{color:var(--mu);min-width:34px;font-variant-numeric:tabular-nums}
+.og>div{flex:1;min-width:0}
+.og ol{margin:8px 0 0;padding:0;list-style:none;border:1px solid var(--ln);border-radius:8px;overflow:hidden;width:max-content;max-width:100%}
+.og li,.og .ohd{display:grid;grid-template-columns:36px 400px 58px 74px 116px 124px auto;gap:12px;align-items:center;padding:4px 12px}
+.og li:nth-child(even){background:var(--alt)}.og li:hover{background:var(--sf)}
+.og .ohd{font-size:11px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--ln);background:var(--sf)}
+.og li .rkp{color:var(--mu);font-variant-numeric:tabular-nums}
+.og .pnm{min-width:0}.og .pnm .mu{font-size:12px;margin-left:6px}
+.og .osc{font-weight:700;font-variant-numeric:tabular-nums}
+.og .dlt{font-variant-numeric:tabular-nums;font-size:13px}.og .dlt.up{color:#4ade80;font-weight:700}
+.og .smb{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums;font-size:13px}.og .smb i{flex:1;height:6px;border-radius:3px;background:var(--ln);overflow:hidden;max-width:80px}.og .smb i b{display:block;height:100%;border-radius:3px}
+.og .opr{white-space:nowrap}.og .opr .np{margin:0}
+@media(max-width:860px){.og{gap:10px}.og>img{width:44px;height:58px}.og .ohd{display:none}.og li{display:flex;flex-wrap:wrap;gap:6px 14px}.og li .pnm{flex:1 1 70%}.og .smb i{width:60px;flex:none}}
 .og li a.nm{color:var(--tx);font-weight:600;text-decoration:none}.og li a.nm:hover{color:var(--ac)}
 @media(max-width:700px){#po{margin:0 10px}.bar{position:static}.wrap{max-height:none}header{padding:14px 12px 8px}.bar{padding:8px 12px}.wrap{margin:0 4px}.bar input[type=search]{width:100%}h1{font-size:19px}footer{padding:12px}}
 /* ===== V3 sin color (solo web pública: <html class="v3">) — tarjetas en móvil/tablet, filas en ordenador ===== */
@@ -351,9 +362,10 @@ function setLg(l){LG=l;localStorage.setItem('faLg',l);document.documentElement.l
 // web pública: SIEMPRE amazon.com con nanaruth-20 (Global Earning redirige a la tienda local y cobra en 10 países, España incluida).
 // El -21 va solo en el HTML privado (CLAUDE.md, norma estricta): la versión pública borra TAG21.
 const TAG21='';
-function buy(r){const q=encodeURIComponent(r.c+' '+r.n),
- u='https://www.amazon.com/s?k='+q+'&tag=nanaruth-20';
- return `<a class="buy" href="${u}"${r.au?` data-us="${r.au}"`:''} target="_blank" rel="sponsored noopener">${L('Ver en Amazon','View on Amazon')}</a>`}
+const amzu=r=>'https://www.amazon.com/s?k='+encodeURIComponent(r.c+' '+r.n)+'&tag=nanaruth-20';
+function buy(r){return `<a class="buy" href="${amzu(r)}"${r.au?` data-us="${r.au}"`:''} target="_blank" rel="sponsored noopener">${L('Ver en Amazon','View on Amazon')}</a>`}
+// nombre del perfume: en la web pública abre Amazon con nuestro tag (si fuese a Fragrantica, su propio afiliado se quedaría el último clic)
+const nmh=r=>PUB?`href="${amzu(r)}"${r.au?` data-us="${r.au}"`:''} target="_blank" rel="sponsored noopener"`:`href="${r.u}" target="_blank"`;
 let key='rk',asc=true;const st={t3:0,fa:0,fd:0,sup:0};
 function amz(r){if(!r.am)return r.c==='Zara'?'<span class="mu">zara.com</span>':'<span class="mu">none</span>';const a=r.am,u='https://www.amazon.es/dp/'+a.asin+'?tag='+TAG21,
  p100=(a.amz??a.min)*100/(a.ml||100),pc=p100<=30?'pg':p100<=50?'py':'pr',pt=`${fx(p100)} € / 100 ml`,
@@ -377,8 +389,9 @@ const simtip=r=>L(`${r.sy} «sí» y ${r.sno} «no» en «This perfume reminds m
 // pestaña «Por original»: cada original con sus alternativas (los dudosos no cuentan)
 function porOriginal(R){const G={};R.filter(r=>r.sim&&!r.dud).forEach(r=>(G[r.sim]=G[r.sim]||{s:r.sim,oid:r.oid,os:r.os,r:[]}).r.push(r));
  const gs=Object.values(G).sort((a,b)=>b.r.length-a.r.length||b.r[0].b-a.r[0].b);
- $('#po').innerHTML=gs.map(g=>`<div class="og">${g.oid?`<img loading="lazy" src="https://fimgs.net/mdimg/perfume/375x500.${g.oid}.jpg" alt="">`:'<span style="width:64px;flex:none"></span>'}<div><h3>${PUB&&g.os?`<a class="nm" href="${LG==='es'?'es/':''}inspired-by/${g.os}/">${esc(g.s)}</a>`:esc(g.s)}</h3><span class="mu">${g.r.length} ${g.r.length>1?L('equivalencias','alternatives'):L('equivalencia','alternative')}${ON[g.oid]?` · ${L('original','original')}: <span class="tip" data-tip="${esc(L(`Nota del original en Fragrantica (${th(ON[g.oid][1])} votos)`,`Original's Fragrantica rating (${th(ON[g.oid][1])} votes)`))}">${fx(ON[g.oid][0])} ★</span>`:''}</span><ol>`+
-  g.r.sort((a,b)=>b.b-a.b).map(r=>`<li><span class="rkp">#${r.rk}</span><a class="nm" href="${r.u}" target="_blank">${esc(r.n)}</a><span class="mu">${esc(r.c)}</span><span class="sc tip" data-tip="${esc(L(`Nota en Fragrantica (${th(r.v)} votos)`,`Fragrantica rating (${th(r.v)} votes)`))}">${fx(r.r)} ★</span>${r.sup?`<span class="tip" style="color:#4ade80" data-tip="${esc(L(`Nota ${fx(r.r)} frente a ${fx(ON[r.oid][0])} del original`,`Rating ${fx(r.r)} vs ${fx(ON[r.oid][0])} for the original`))}">▲ ${L('supera','beats')}</span>`:''}${r.pa!=null?`<span class="mu tip" data-tip="${esc(simtip(r))}">${L('parecido','similarity')} ${r.pa} %</span>`:''}${PUB?price(r,1)+buy(r):''}</li>`).join('')+'</ol></div></div>').join('')||`<p class="mu">${L('Nada con estos filtros.','Nothing matches these filters.')}</p>`;
+ $('#po').innerHTML=gs.map(g=>`<div class="og">${g.oid?`<img loading="lazy" src="https://fimgs.net/mdimg/perfume/375x500.${g.oid}.jpg" alt="">`:'<span style="width:64px;flex:none"></span>'}<div><h3>${PUB&&g.os?`<a class="nm" href="${LG==='es'?'es/':''}inspired-by/${g.os}/">${esc(g.s)}</a>`:esc(g.s)}</h3><span class="mu">${g.r.length} ${g.r.length>1?L('equivalencias','alternatives'):L('equivalencia','alternative')}${ON[g.oid]?` · ${L('original','original')}: <span class="tip" data-tip="${esc(L(`Nota del original en Fragrantica (${th(ON[g.oid][1])} votos)`,`Original's Fragrantica rating (${th(ON[g.oid][1])} votes)`))}">${fx(ON[g.oid][0])} ★</span>`:''}</span><ol><li class="ohd"><span>#</span><span>${L('Perfume','Perfume')}</span><span>${L('Nota','Rating')}</span><span>${L('vs. original','vs original')}</span><span>${L('Parecido','Similarity')}</span>${PUB?`<span>${L('Precio','Price')}</span><span></span>`:''}</li>`+
+  g.r.sort((a,b)=>b.b-a.b).map(r=>{const o=ON[r.oid],d=o?r.r-o[0]:null,sc=r.pa>=85?'var(--ok)':r.pa>=70?'var(--ac)':'var(--wa)';
+  return `<li><span class="rkp">#${r.rk}</span><span class="pnm"><a class="nm" ${nmh(r)}>${esc(r.n)}</a><span class="mu">${esc(r.c)}</span></span><span class="osc sc tip" data-tip="${esc(L(`Nota en Fragrantica (${th(r.v)} votos)`,`Fragrantica rating (${th(r.v)} votes)`))}">${fx(r.r)} ★</span>${d==null?'<span class="dlt mu">—</span>':`<span class="dlt tip${r.sup?' up':' mu'}" data-tip="${esc(L(`Nota ${fx(r.r)} frente a ${fx(o[0])} del original`,`Rating ${fx(r.r)} vs ${fx(o[0])} for the original`))}">${r.sup?'▲ ':''}${d>=0?'+':'−'}${fx(Math.abs(d))}</span>`}${r.pa!=null?`<span class="smb tip" data-tip="${esc(simtip(r))}"><i><b style="width:${r.pa}%;background:${sc}"></b></i>${r.pa} %</span>`:'<span class="smb mu">—</span>'}${PUB?`<span class="opr">${price(r,1)}</span><span class="obu">${buy(r)}</span>`:''}</li>`}).join('')+'</ol></div></div>').join('')||`<p class="mu">${L('Nada con estos filtros.','Nothing matches these filters.')}</p>`;
  return gs.length}
 function render(){const c=$('#fc').value,g=$('#fg').value,q=nq($('#q').value);url();
  let R=V.filter(r=>(!YR||r.y.includes(YR))&&(!c||r.c===c)&&(!g||r.g===g)&&(!st.t3||r.t3)&&(!st.fa||(r.am&&r.am.amz!=null))&&(!st.fd||r.s>=70)&&(!st.sup||r.sup)&&qok(r)
@@ -391,7 +404,7 @@ function render(){const c=$('#fc').value,g=$('#fg').value,q=nq($('#q').value);ur
 // columnas: [clave de orden, título, clase, celda]
 const COLS=[
  ['rk','#','n hl',r=>`<td class="rk">${r.rk}</td>`],
- ['n','Perfume','',r=>`<td class="pn"><a href="${r.u}" target="_blank">${esc(r.n)}</a><span class="cs">${esc(r.c)}</span></td>`],
+ ['n','Perfume','',r=>`<td class="pn"><a ${nmh(r)}>${esc(r.n)}</a><span class="cs">${esc(r.c)}</span></td>`],
  ['','Foto','',r=>`<td class="ph"><img loading="lazy" src="https://fimgs.net/mdimg/perfume/375x500.${r.id}.jpg" alt=""></td>`],
  ['g','Género','',r=>`<td><span class="g ${r.g}">${r.g==='H'?L('Hombre','Men'):r.g==='F'?L('Mujer','Women'):'Unisex'}</span></td>`],
  ['o','Origen','',r=>`<td class="or">${esc(L(r.o,{'Budget Brand 2025 · top 15 casas':'Budget Brand 2025 · top 15 houses','Budget Brand 2025 · top 3 de su casa':'Budget Brand 2025 · top 3 of its house','Casa nominada en Budget Brand 2025':'House nominated in Budget Brand 2025','Lo mejor de siempre de la casa':"House's all-time best",'Best Middle Eastern 2022–23':'Best Middle Eastern 2022–23','Mujer · mismas casas y corte':'Women · same houses and cut-off'}[r.o]||insp(r.o)))}</td>`],
@@ -507,7 +520,7 @@ function fila3(r){const i=lvl(r.lon,5),j=lvl(r.sil,4),pc=pros3(r);
  return `<div class="rw3" style="--sx:${SXC[r.g]||'#888'}"><div class="d3r">
 <div class="rkc">${medal(r.rk)}<button class="bm${SV.has(r.id)?' on':''}" data-id="${r.id}" aria-label="${L('Guardar','Save')}" title="${L('Guardar en este dispositivo','Save on this device')}"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg></button></div>
 <div class="pair3" data-zoom="${zm(r)}">${r.oid?`<span class="tile o"><img loading="lazy" src="${IMG(r.oid)}" alt=""></span><em>≈</em>`:''}<span class="tile"><img loading="lazy" src="${IMG(r.id)}" alt="${esc(r.n)}"></span></div>
-<div class="in3"><div class="nm3"><a href="${r.u}" target="_blank" rel="noopener">${esc(r.n)}</a></div><div class="hs3">${esc(r.c)}<i></i>${GN(r.g)}</div><div class="mu">${L('Inspirado en','Inspired by')}${dudt(r)} <b style="color:var(--tx);font-weight:600">${esc(r.sim||'—')}</b></div><div class="vx">${aw3(r)}</div>${pc?`<div class="d3pc">${pc}</div>`:''}</div>
+<div class="in3"><div class="nm3"><a ${nmh(r)}>${esc(r.n)}</a></div><div class="hs3">${esc(r.c)}<i></i>${GN(r.g)}</div><div class="mu">${L('Inspirado en','Inspired by')}${dudt(r)} <b style="color:var(--tx);font-weight:600">${esc(r.sim||'—')}</b></div><div class="vx">${aw3(r)}</div>${pc?`<div class="d3pc">${pc}</div>`:''}</div>
 <div class="simc">${ring(r,1)}<span class="mu">${kk((r.sy||0)+(r.sno||0))} ${L('votos','votes')}</span><div class="vx">${th(r.sy||0)} ${L('sí','yes')}<br>${th(r.sno||0)} no</div></div>
 <div><div class="rt3 lg"><b>★ ${fx(r.r)}</b></div><div class="mu">${kk(r.v)} ${L('votos','votes')}</div><div class="vx">❤️ ${kk(r.l)} · ${kk(r.h)} ${L('lo tienen','own it')}<br>${L('Calidad-precio','Value')} ${fx(r.pv,1)}/5</div></div>
 <div class="pfc"><div>${L('Duración','Longevity')}${dots(r.lon,5)}</div><div>${L('Estela','Sillage')}${dots(r.sil,4)}</div><div class="vx">${W3(DURL,i)} · ${W3(ESTL,j)}</div></div>
